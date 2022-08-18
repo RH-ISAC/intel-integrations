@@ -1,0 +1,10 @@
+# RH-ISAC.conf for the Splunk - MISP Integrations
+
+# RH-ISAC MISP - Check the ./misp/README.md file for details.
+[RH-ISAC MISP]
+key = <MISP API KEY HERE>
+
+# CrowdStrike - Check ./misp/crowdstrike/README.md
+[crowdstrike]
+falcon_client_id = <CROWDSTRIKE API CLIENT ID HERE>
+falcon_client_secret = <CROWDSTRIKE API SECRET HERE>
