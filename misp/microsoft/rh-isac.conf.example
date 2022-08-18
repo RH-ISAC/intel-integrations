@@ -1,0 +1,13 @@
+# RH-ISAC.conf for the Microsoft - MISP Integrations
+
+# RH-ISAC MISP - Check the ./misp/README.md file for details.
+[RH-ISAC MISP]
+key = <MISP API KEY HERE>
+
+# Microsoft Graph API - Check ./misp/microsoft/README.md
+[microsoft]
+# Acceptable options for product are "Azure Sentinel" or "Microsoft Defender ATP"
+product = Azure Sentinel
+tenantId = <MICROSOFT AZURE TENANT ID HERE>
+appId = <MICROSOFT GRAPH API APPID HERE>
+appSecret = <MICROSOFT GRAPH API SECRET KEY HERE>
