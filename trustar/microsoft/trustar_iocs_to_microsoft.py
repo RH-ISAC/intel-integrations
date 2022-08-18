@@ -22,7 +22,7 @@ from trustar2 import TruStar, Observables  # Install trustar2 module through RH-
 
 
 __author__ = 'Ian Furr'
-__version__ = '0.3'
+__version__ = '0.4'
 __email__ = 'ian.furr@rhisac.org'
 
 
@@ -31,7 +31,7 @@ ENCLAVE_IDS = [
     "59cd8570-5dce-4e5b-b09c-9807530a7086",  # RH-ISAC Vetted Indicators
 ]
 
-window = 90 # Number of days to retain IOC
+window = 120 # Number of days to retain IOC
 debug = False # Set to "True" for added logging/visiblity
 
 # Regex to identify URLs that only contain a domain (not an IP, and no path)
@@ -323,27 +323,27 @@ def upload_iocs(iocs: List[dict], credentials: dict) -> None:
 
 
 if __name__ == '__main__':
-    aad_conf = configparser.ConfigParser()
-    aad_conf.read("./aad_config.conf")
+    conf = configparser.ConfigParser()
+    conf.read("./rh-isac.conf")
     
-    if 'aad' not in aad_conf.sections():
-        print(f'Missing config section "aad". Please check the example configuration and try again.')
+    if 'microsoft' not in conf.sections():
+        print(f'Missing config section "microsoft". Please check the example configuration and try again.')
         exit()
-    if 'trustar' not in aad_conf.sections():
+    if 'trustar' not in conf.sections():
         print(f'Missing config section "trustar". Please check the example configuration and try again.')
         exit()
 
     credentials = {
-        "product":aad_conf['aad']['product'],
-        "tenantId":aad_conf['aad']['tenantId'],
-        "appId":aad_conf['aad']['appId'],
-        "appSecret":aad_conf['aad']['appSecret'],    
+        "product":conf['microsoft']['product'],
+        "tenantId":conf['microsoft']['tenantId'],
+        "appId":conf['microsoft']['appId'],
+        "appSecret":conf['microsoft']['appSecret'],    
     }
 
     ts_credentials = {
-        "user_api_key":aad_conf['trustar']['user_api_key'],
-        "user_api_secret":aad_conf['trustar']['user_api_secret'],
-        "client_metatag":aad_conf['trustar']['client_metatag'],
+        "user_api_key":conf['trustar']['user_api_key'],
+        "user_api_secret":conf['trustar']['user_api_secret'],
+        "client_metatag":conf['trustar']['client_metatag'],
     }
 
     # Retrieve Observables from TruSTAR

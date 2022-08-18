@@ -1,12 +1,14 @@
-# RH-ISAC Azure AD Integration Config File
-# Do not wrap variables with any special characters.
-[aad]
+# RH-ISAC.conf for the Microsoft Sentinel/Defender - TruSTAR Integration
+
+# Microsoft Graph API - Check ./trustar/microsoft/README.md
+[microsoft]
 # Acceptable options for product are "Azure Sentinel" or "Microsoft Defender ATP"
 product = Azure Sentinel
-tenantId = <AZURE TENAT ID HERE>
-appId = <AZURE APP ID HERE>
-appSecret = <AZURE SECRET KEY HERE>
+tenantId = <MICROSOFT AZURE TENANT ID HERE>
+appId = <MICROSOFT GRAPH API APPID HERE>
+appSecret = <MICROSOFT GRAPH API SECRET KEY HERE>
 
+# Trustar - Check ./trustar/README.md
 [trustar]
 auth_endpoint = https://api.trustar.co/oauth/token
 api_endpoint = https://api.trustar.co/api/2.0
