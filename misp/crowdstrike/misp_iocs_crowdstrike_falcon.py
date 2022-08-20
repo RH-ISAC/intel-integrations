@@ -125,7 +125,7 @@ def upload_iocs(iocs: List[dict], creds: dict) -> None:
     ioc_block = []
     for ioc in iocs:
         if ioc['type'] not in TYPE_MAP:
-            print(f"No Crowdstrike IOC type for TruSTAR type {ioc['type']}. Value: {ioc['value']}")
+            print(f"No Crowdstrike IOC type for MISP type {ioc['type']}. Value: {ioc['value']}")
             continue
         ioc_dict = {
             'source': "RH-ISAC Vetted",

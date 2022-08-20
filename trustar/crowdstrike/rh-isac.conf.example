@@ -1,0 +1,14 @@
+# Trustar - Check ./trustar/README.md
+[trustar]
+auth_endpoint = https://api.trustar.co/oauth/token
+api_endpoint = https://api.trustar.co/api/2.0
+user_api_key = <TruSTAR TENAT ID HERE>
+user_api_secret = <TruSTAR TENAT ID HERE>
+# RH-ISAC Vetted IOCs Enclave
+enclave_ids = 7a33144f-aef3-442b-87d4-dbf70d8afdb0
+client_metatag = RHISAC Vetted Indicator AAD Script
+
+# CrowdStrike - Check ./misp/crowdstrike/README.md
+[crowdstrike]
+falcon_client_id = <CROWDSTRIKE API CLIENT ID HERE>
+falcon_client_secret = <CROWDSTRIKE API SECRET HERE>

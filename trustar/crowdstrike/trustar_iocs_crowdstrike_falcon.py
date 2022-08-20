@@ -6,6 +6,7 @@
 
 import json
 import re
+import configparser
 
 from datetime import datetime, timedelta, timezone
 from typing import List
@@ -15,7 +16,7 @@ from trustar2 import TruStar, Observables  # pip install trustar2
 
 
 __author__ = 'Bradley Logan, Ian Furr'
-__version__ = '0.94'
+__version__ = '0.4'
 __email__ = 'bradley.logan@rhisac.org, ian.furr@rhisac.org'
 
 
@@ -30,12 +31,17 @@ TYPE_MAP = {
     'MD5': 'md5',
     'SHA256': 'sha256',
 }
+# Override defaults here
+CONFIG_PATH = "./rh-isac.conf"
+TRUSTAR_CONFIG_SECTION = "TRUSTAR"
+
+
 
 # Regex to identify URLs that only contain a domain (not an IP, and no path)
 REXP = r'\w{2,}:\/\/(?=.*[A-Za-z])[A-Za-z0-9-\.]+\/?$'
 
 
-def upload_iocs(iocs: List[dict]) -> None:
+def upload_iocs(iocs: List[dict], credentials: dict) -> None:
     """Upload a list of IOCs to the Crowdstrike API.
 
     Parameters
@@ -50,10 +56,8 @@ def upload_iocs(iocs: List[dict]) -> None:
     """
     debug = False
 
-    with open("cs_config.json", "r", encoding="utf-8") as cs_cred_file:
-        config = json.loads(cs_cred_file.read())
-        falcon = IOC(client_id=config["falcon_client_id"],
-                     client_secret=config["falcon_client_secret"])
+    falcon = IOC(client_id=credentials.get("falcon_client_id"),
+                client_secret=credentials.get("falcon_client_secret"))
 
     # API accepts up to 200 IOCs per request, so create blocks of 200 IOCs
     ioc_count = 0
@@ -150,7 +154,7 @@ def upload_iocs(iocs: List[dict]) -> None:
     return
 
 
-def retrieve_last24h_obls() -> List[dict]:
+def retrieve_last24h_obls(ts_credentials: dict) -> List[dict]:
     """Query the TruSTAR 2.0 API for last 24 hours of Observables and return them.
 
     Returns
@@ -161,9 +165,9 @@ def retrieve_last24h_obls() -> List[dict]:
 
     # Instantiate API Object
     try:
-        ts = TruStar.config_from_file("trustar2.conf", "station")
+        ts = TruStar(api_key=ts_credentials.get('user_api_key'), api_secret=ts_credentials.get('user_api_secret'), client_metatag=ts_credentials.get('client_metatag'))
     except KeyError as e:
-        print(f'{str(e)[1:-1]} in config file "trustar2.conf". Exiting...')
+        print(f'{str(e)[1:-1]} in config file "rh-isac.conf". Exiting...')
         exit()
 
     # Setup to/from times and convert timestamps to milliseconds since epoch
@@ -209,3 +213,43 @@ if __name__ == '__main__':
         print(f'No IOCs found for the given time period. Exiting...')
         exit()
     upload_iocs(obls)
+
+if __name__ == '__main__':
+    # Parse config 
+    conf = configparser.ConfigParser()    
+    if not conf.read(CONFIG_PATH):
+        if not conf.read("../" + CONFIG_PATH):
+            print(f'Config file {CONFIG_PATH} not found')
+            exit()
+    
+    try:
+        if 'crowdstrike' not in conf.sections():
+            print(f'Missing config section "crowdstrike". Please check the example configuration and try again.')
+            exit()
+        if TRUSTAR_CONFIG_SECTION not in conf.sections():
+            print(f'Missing config section "{TRUSTAR_CONFIG_SECTION}". Please check the example configuration and try again.')
+            exit()
+
+        credentials = {
+                "falcon_client_id":conf['crowdstrike']['falcon_client_id'],
+                "falcon_client_secret":conf['crowdstrike']['falcon_client_secret'],
+            }
+
+        ts_credentials = {
+            "user_api_key":conf[TRUSTAR_CONFIG_SECTION]['user_api_key'],
+            "user_api_secret":conf[TRUSTAR_CONFIG_SECTION]['user_api_secret'],
+            "client_metatag":conf[TRUSTAR_CONFIG_SECTION]['client_metatag'],
+        }
+    except KeyError as e:
+        print(f'Cannot find "{e}" in file {CONFIG_PATH}')
+        exit()
+
+    # Retrieve Observables from TruSTAR
+    obls = retrieve_last24h_obls(ts_credentials)
+    if not obls:
+        print(f'No IOCs found for the given time period. Exiting...')
+        exit()
+    
+    # Upload to MS Graph API
+    print("Uploading IOCs to Graph API.")
+    upload_iocs(obls, credentials)

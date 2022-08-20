@@ -1,26 +1,26 @@
-# Crowdstrike Falcon Integration Script
+# ./INTEL-INTEGRATIONS/TRUSTAR/CROWDSTRIKE
+
 > **Warning**
-> Use the content in this repository at your own risk. RH-ISAC will not be held responsible for data loss, nor any other problems resulting from the use of this content. **THIS SCRIPT IS A BETA VERSION**
+> Use the content in this repository at your own risk. RH-ISAC will not be held responsible for data loss, nor any other problems resulting from the use of this content. 
+
+**THIS SCRIPT IS A IN BETA**
 
 ## Requirements
-The CrowdStrike script requires:
-1. The TruSTAR Python SDK
-   1. To install, follow the instructions in the README in the root of this repo
-2. The CrowdStrike Falcon Python Module (FalconPy)
-    1. `pip install crowdstrike-falconpy`
-3. A valid **trustar.conf** and **cs_config.json** file
-   1. See CONFIGURATION section below
+- Python 3.9+
+- The TruSTAR Python SDK
+   - To install, follow the instructions in the [README in the TruSTAR directory](../README.md) of this repo
+- CrowdStrike Falcon Python Module (FalconPy) `pip install crowdstrike-falconpy`
+
+> **Note**
+> We strongly recomend the usage of [virtual environments](https://docs.python.org/3/library/venv.html) to provide a clean space to install dependancies.
 
 ## Configuration
-Valid **trustar2.conf** and **cs_config.json** files are requred to authentication to the TruSTAR and CrowdStrike APIs.
-1. Make a copy of **trustar_example2.conf** and **cs_config_example.json** and name them **trustar2.conf** and **cs_config.json** respectively.
-2. Lookup your TruSTAR API Key and API Secret in TruSTAR station and place them in the spots specified in the **trustar2.conf** file
-   1. https://station.trustar.co/settings/api
-3. Retrive your CrowdStrike Falcon API ID and Secret Key and place them in the specified locations in the **cs_config.json** file
-4. Save the files in the same directory as your TruSTAR Python script
-Run the scripts
+### TruSTAR Configuration
+A valid **rh-isac.conf** file is the easiest way to setup access and authentication to the TruSTAR and the CrowdStrike APIs. Detailed instructions can be found in the [README in the TruSTAR directory](../README.md) however you can retrieve your TruSTAR API credentials in the TruSTAR portal. https://station.trustar.co/settings/api
 
 
+### Falcon API Config
+Retrieve your falcon API key and secret from the falcon console and palce them into the relevant sections in your **rh-isac.conf** file.
 
 ## TruSTAR Python SDK & REST API
 1. TruSTAR Python SDK
@@ -30,8 +30,8 @@ Run the scripts
    1. Documentation: https://docs.trustar.co/api/index.html
    2. Usage Policy: https://support.trustar.co/article/m5kl5anpiz-api-rate-limit-quota
 
-## CrowdStrike Falcon
-1. API Documentation
-    1. Swagger Docs: https://assets.falcon.laggar.gcw.crowdstrike.com/support/api/swagger-eagle.html#/
-2. FalconPy Documentation
-    1. Github: https://github.com/CrowdStrike/falconpy
+
+## Falcon Resources
+1. Falcon API Swagger Docs (REQUIRES AUTH): https://assets.falcon.laggar.gcw.crowdstrike.com/support/api/swagger-eagle.html#/
+2. FalconPy Github: https://github.com/CrowdStrike/falconpy
+
