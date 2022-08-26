@@ -1,5 +1,5 @@
-# ./INTEL-INTEGRATIONS/MISP/MICROSOFT 
-A storage place for Microsoft related integrations for the RH-ISAC MISP instance.
+# ./INTEL-INTEGRATIONS/MISP/SPLUNK 
+A storage place for Splunk related integrations for the RH-ISAC MISP instance.
 
 > **Warning**
 > Use the content in this repository at your own risk. RH-ISAC will not be held responsible for data loss, nor any other problems resulting from the use of this content. **This script is a beta version and intended to be used as an example.**
@@ -7,7 +7,6 @@ A storage place for Microsoft related integrations for the RH-ISAC MISP instance
 ## Requirements
 - Python 3.9+
 - PyMISP `pip install pymisp` (https://github.com/MISP/PyMISP)
-
 
 > **Note**
 > We strongly recomend the usage of [virtual environments](https://docs.python.org/3/library/venv.html) to provide a clean space to install dependancies.
@@ -25,26 +24,27 @@ key = <MISP API KEY HERE>
 ```
 The `key` field is your MISP API key.
 
-### Graph API Config
-The process for integrating with Sentinel and Windows Defender is a little more involved. Microsoft has a fairly in-depth [guide](https://docs.microsoft.com/en-us/azure/sentinel/connect-threat-intelligence-tip). RH-ISAC also has a guide in progess with additional screenshots in the works and this documentation will be updated with a link soon. 
-
+### Splunk Configuration
+#### Splunk
 ```
-[microsoft]
-product = Azure Sentinel
-tenantId = <MICROSOFT AZURE TENANT ID HERE>
-appId = <MICROSOFT GRAPH API APPID HERE>
-appSecret = <MICROSOFT GRAPH API SECRET KEY HERE>
+[splunk]
+base_url = https://localhost:8089
+username = <SPLUNK USERNAME>
+password = <SPLUNK PASSWORD>
+headers = <SPLUNK HEADERS>
 ```
+The `base_url` field will be the hostname of your splunk instance, followed by the port you have exposed (similar to the example text above). The `username` and `password` should be the account details for whichever account you've set up to access your splunk instance, and has the permissions to write IOCs. Lastly the `headers` field can be used if your splunk instance required additional headers.
 
-The `product` field dictates which Microsoft product you are targeting, it can either be "*Azure Sentinel*" or "*Microsoft Defender ATP*". The `tenantId` field should be filled with your Tenant ID. (This can be found in various places in the Azure UI, or via the Powershell `Connect-AzAccount` commandlet.) During the application setup process you should find and copy the `appId` and `appSecret` as the secret will *not be shown again*.
-
+#### Splunk ES
+```
+[splunk-es]
+base_url = https://localhost:8089
+token = <ENTER AUTH TOKEN HERE>
+headers = <SPLUNK HEADERS>
+```
+The `base_url` field will be the hostname of your splunk instance, followed by the port you have exposed (similar to the example text above). The `token` field should contain the splunk access token that you have created, that has the permissions to write IOCs. Lastly the `headers` field can be used if your splunk instance required additional headers.
 
 # Documentation/Reference
 ## PyMISP - Python Library to access MISP
 1. Documentation: https://pymisp.readthedocs.io
 2. Source: https://github.com/MISP/PyMISP
-
-## Microsoft Graph API/Sentinel/Defender Resources
-1. Threat Indicator Graph API Overview: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta
-2. TIP Integration Guide: https://docs.microsoft.com/en-us/azure/sentinel/connect-threat-intelligence-tip
-

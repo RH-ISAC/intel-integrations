@@ -1,8 +1,8 @@
 # ./INTEL-INTEGRATIONS/MISP
-A storage place for MISP related scripts. You can find generic MISP->CSV or MISP->JSON scripts in the generic directory, or integration specific scripts inside of the directories with the same name. 
+A storage place for MISP related scripts. You can find MISP->JSON file scripts in the generic directory, or integration specific scripts inside of the directories with the same name. 
 
 > **Warning**
-> Use the content in this repository at your own risk. RH-ISAC will not be held responsible for data loss, nor any other problems resulting from the use of this content.
+> Use the content in this repository at your own risk. RH-ISAC will not be held responsible for data loss, nor any other problems resulting from the use of this content. **This script is a beta version and intended to be used as an example.**
 
 ## Requirements
 - Python 3.9+
@@ -29,9 +29,9 @@ A valid **rh-isac.conf** file is the easiest way to setup access and authenticat
 2. Source: https://github.com/MISP/PyMISP
 
 ## MISP Integrations
-- CrowdStrike Falcon:
-- Splunk (and Splunk ES):
-- Microsoft (Sentinel & Defender for Endpoint): Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and output them to a JSON file.
+- CrowdStrike Falcon: Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and export them into the Falcon API.
+- Splunk (and Splunk ES): Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and export them into Splunk APIs.
+- Microsoft (Sentinel & Defender for Endpoint): Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and export them into the MS Graph APIs for consumption by Microsoft (Azure) Sentinel and Microsoft Defender.
 
 ## Generic MISP Scripts
 - get_24h_misp_vetted_iocs.py: Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and output them to a JSON file.
