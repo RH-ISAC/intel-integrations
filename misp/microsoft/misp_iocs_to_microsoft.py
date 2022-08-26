@@ -24,7 +24,7 @@ MISP_URL = "https://misp.rhisac.org"
 OUTPUT_FIELDS = ('value', 'type', 'timestamp', 'Tag', 'Event')
 OUTPUT_FILENAME = None
 VETTED_TAG = "rhisac: vetted"
-WINDOW = 120 # Amount of time to retail IOCs
+WINDOW = 120 # Amount of time to retain IOCs
 
 # Enable Debug for additional output
 debug = False
@@ -33,6 +33,10 @@ debug = False
 def get_last24h_vetted_iocs(key: str) -> List[dict]:
     """Query the MISP API for last 24 hours of RH-ISAC Vetted IOCs and return
 
+    Parameters
+    _______
+    key: string
+        MISP Authentication Key (pulled from rh-isac.conf)
     Returns
     _______
     list[dict]
@@ -53,7 +57,7 @@ def get_last24h_vetted_iocs(key: str) -> List[dict]:
         iocs = results['Attribute']
         print(f'Got {len(iocs)} IOCs from MISP')
     except Exception as e:
-        print(f'Error while query MISP for IOCs: {str(e)}')
+        print(f'Error while searching  MISP for IOCs: {str(e)}')
         exit()
 
     return iocs
@@ -104,7 +108,8 @@ def get_token(credentials:dict) -> dict:
     """
     ## Register an Azure Active Directory application with the 'ThreatIndicators.ReadWrite.OwnedBy' Microsoft Graph Permission.
     ## Get your Azure AD tenant administrator to grant administration consent to your application. This is a one-time activity unless permissions change for the application. 
-    
+    ## More details in the README.MD file in this directory.
+
     tenantId = credentials.get('tenantId')
 
     # Azure Active Directory token endpoint.
@@ -137,7 +142,7 @@ def get_token(credentials:dict) -> dict:
 
 def submit_ioc(tibody: dict = None, headers: dict = None) -> requests.Response:
     """
-    Post a TI to the GraphAPI
+    Post an IOC to the GraphAPI
     
     Parameters
     ----------
@@ -165,7 +170,7 @@ def submit_ioc(tibody: dict = None, headers: dict = None) -> requests.Response:
         if debug:
             # If additional visiblity is requested print the JSON contents of the response.
             json_response = response.json()
-            print("Response :")
+            print("Response: ")
             print(json.dumps(json_response, indent=4))
 
     else:
@@ -204,7 +209,7 @@ def upload_iocs(iocs: List[dict], credentials: dict) -> None:
             "action": "alert", # REQUIRED - STRING -  Action to take if the indicator is detected within the environment (unknown, allow, block, alert)
             "azureTenantId": credentials.get('tenantId'), # REQURIED - STRING - Azure Active Directory tenant id of submitting client
             "description": ioc.get('event'), # REQUIRED - STRING - Describe the IOC (100chars or less)
-            "expirationDateTime": str(datetime.now(timezone.utc) + timedelta(days=WINDOW)), # "2022-08-31T23:59:59.0+00:00", # Now plus 90 days # REQUIRED - DATETIMEOFFSET - indicate when the indicator should expire (UTC)
+            "expirationDateTime": str(datetime.now(timezone.utc) + timedelta(days=WINDOW)), # REQUIRED - DATETIMEOFFSET - indicate when the indicator should expire (UTC)
             "targetProduct": credentials.get('product'), # REQUIRED - STRING - Targeted security product (Azure Sentinel, Microsoft Defender ATP)
             "threatType": "WatchList", # REQUIRED - THREATTYPE - Type of Indicator (Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList)
             "tlpLevel": "amber", # REQUIRED - TLPLEVEL - TLP Value for the IOC (unknown, white, green, amber, red.)
@@ -310,7 +315,7 @@ def upload_iocs(iocs: List[dict], credentials: dict) -> None:
     if not debug and len(errored_iocs) > 0:
         print("To view the list of errored IOCs, enable the debug flag and rerun the script.")
     
-    if debug:
+    if debug and len(errored_iocs) > 0:
         print("Errored IOCs:")
         print(errored_iocs)
     return

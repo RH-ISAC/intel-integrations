@@ -35,8 +35,6 @@ TYPE_MAP = {
 CONFIG_PATH = "./trustar/crowdstrike/rh-isac.conf"
 TRUSTAR_CONFIG_SECTION = "TRUSTAR"
 
-
-
 # Regex to identify URLs that only contain a domain (not an IP, and no path)
 REXP = r'\w{2,}:\/\/(?=.*[A-Za-z])[A-Za-z0-9-\.]+\/?$'
 
@@ -253,3 +251,4 @@ if __name__ == '__main__':
     # Upload to MS Graph API
     print("Uploading IOCs to Graph API.")
     upload_iocs(obls, credentials)
+

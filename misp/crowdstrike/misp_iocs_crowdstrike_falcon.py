@@ -228,7 +228,6 @@ if __name__ == '__main__':
         print(f'Missing config section "{MISP_CONFIG_SECTION}". Please check the example configuration and try again.')
         exit()
 
-
     try:
         misp_key = conf[MISP_CONFIG_SECTION]['Key']
         credentials = {
@@ -248,4 +247,4 @@ if __name__ == '__main__':
         print('No IOCs found in last 24h. Nothing to output.')
     else:
         filtered = filter_results(iocs)
-        upload_iocs(filtered)
+        upload_iocs(iocs=filtered, creds=credentials)

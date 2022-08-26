@@ -26,7 +26,7 @@ key = <MISP API KEY HERE>
 The `key` field is your MISP API key.
 
 ### CrowdStrike Configuration
-To connect your script to CrowdStrike you'll need to authenticate to falcon, and retireve your Falcon API Key and Secret key.
+To connect your script to CrowdStrike you'll need to authenticate to falcon, and retrieve your Falcon API Key and Secret key.
 
 ```
 [crowdstrike]

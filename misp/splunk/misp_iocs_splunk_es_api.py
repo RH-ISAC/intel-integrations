@@ -279,7 +279,7 @@ if __name__ == '__main__':
     ioc_cats = categorize(filtered_iocs)
     
     # Verify Splunk Access
-    have_splunk_access = can_access_splunk()
+    have_splunk_access = can_access_splunk(splunk_creds)
     if have_splunk_access:
         for lookup_name, iocs in ioc_cats.items():
             if not iocs:

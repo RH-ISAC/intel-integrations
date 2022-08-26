@@ -1,5 +1,5 @@
 # ./INTEL-INTEGRATIONS/TRUSTAR
-A storage place for TruSTAR related scripts. You can find various TruSTAR to CSV or JSON scripts and utility scripts in the generic directory, or integration specific scripts inside of the directories with the same name. 
+A storage place for TruSTAR related scripts. You can find various TruSTAR utility scripts in the generic directory these include scripts to get account permissions details, and some that will let you pull IOCs and store them in JSON or CSV files. Integration specific scripts can be found inside of the directories named after the relevant vendor. 
 
 > **Warning**
 > Use the content in this repository at your own risk. RH-ISAC will not be held responsible for data loss, nor any other problems resulting from the use of this content. **This script is a beta version and intended to be used as an example.**
@@ -19,12 +19,12 @@ A valid **rh-isac.conf** file is the easiest way to setup access and authenticat
 3. Copy the API and Secret Keys into your **rh-isac.conf** and save it into the proper directory.
 
 ### TruSTAR Configuration
-TruSTAR has two Python modules (trustar-python-sdk1 and trustar-sdk2-proto) they host for interacting with the TruSTAR APIs. RH-ISAC has cloned and updated them to the latest requirements. The version that targets the [TruSTAR v2.0 API](https://github.com/RH-ISAC/trustar-sdk2-proto) should be used for all new integrations. However, if you require access to the old APIs you can find the [TruSTAR 1.3 API](https://github.com/RH-ISAC/trustar-python-sdk1) module on our github as well.
+TruSTAR has two Python modules (*trustar-python-sdk1* and *trustar-sdk2-proto*) they host for interacting with the TruSTAR APIs. RH-ISAC has cloned and updated them to the latest requirements so taht they can be used with our scripts. The [TruSTAR v2.0 API](https://github.com/RH-ISAC/trustar-sdk2-proto) module should be used for all new integrations. However, if you require access to the old APIs you can find the [TruSTAR 1.3 API](https://github.com/RH-ISAC/trustar-python-sdk1) module on our github as well.
 
 To install the module:
 1. Clone the repo you need (Use TruSTAR2 unless you have a specific version to use TruSTAR 1.3)
 2. Run `pip install /path/to/repo` where `/path/to/repo` is the path to the location you cloned the TruSTAR Repo
-3. Test the instillation by attempting to import a TruSTAR module from a Python shell.
+3. Test your install by attempting to import a TruSTAR module from a Python shell. IE: `from trustar2 import TruStar` and if that works you are all set.
 
 ## TruSTAR Integrations
 - CrowdStrike Falcon: Retrieve the last 24 hours of RH-ISAC Vetted IOCs from TruSTAR and export them into the Falcon API.
@@ -40,7 +40,7 @@ To install the module:
    2. Source: https://github.com/trustar/trustar-python
 2. TruSTAR REST API
    1. Documentation: https://docs.trustar.co/api/index.html
-   2. Usage Policy: https://support.trustar.co/article/m5kl5anpiz-api-rate-limit-quota
+   2. Rate Limit Details: https://support.trustar.co/article/m5kl5anpiz-api-rate-limit-quota
 
 ## Uninstall TruSTAR Python SDK
 To uninstall, simply run:

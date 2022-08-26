@@ -31,12 +31,12 @@ client_metatag = RHISAC Vetted Indicator AAD Script
 The `auth_endpoint` and `api_endpoint` fields are both TruSTAR defaults, and shouldnt need to be changed unless you are switching which version of the API that you are targeting. The `user_api_key` and `user_api_secret` are your API creds obtained from `https://station.trustar.co/settings/api`. The `enclave_ids` field will determine what TruSTAR Enclave you retrieve data from. The default value, the RH-ISAC Vetted Indicators Enclave, is populated by RH-ISAC Analysts each day with validated indicators from our members. The field will accept multiple enclaves, so if desired you could add a comma, followed by the Enclave ID of another encalve you wish to pull data from. The last field, `client_metatag` is an arbitrary string the API uses to gater metadata. You can leave it as the default, or change it to whatever you see fit. 
 
 #### TruSTAR Python Module Configuration
-TruSTAR has two Python modules (trustar-python-sdk1 and trustar-sdk2-proto) they host for interacting with the TruSTAR APIs. RH-ISAC has cloned and updated them to the latest requirements. The version that targets the [TruSTAR v2.0 API](https://github.com/RH-ISAC/trustar-sdk2-proto) should be used for all new integrations. However, if you require access to the old APIs you can find the [TruSTAR 1.3 API](https://github.com/RH-ISAC/trustar-python-sdk1) module on our github as well.
+TruSTAR has two Python modules (*trustar-python-sdk1* and *trustar-sdk2-proto*) they host for interacting with the TruSTAR APIs. RH-ISAC has cloned and updated them to the latest requirements so taht they can be used with our scripts. The [TruSTAR v2.0 API](https://github.com/RH-ISAC/trustar-sdk2-proto) module should be used for all new integrations. However, if you require access to the old APIs you can find the [TruSTAR 1.3 API](https://github.com/RH-ISAC/trustar-python-sdk1) module on our github as well.
 
 To install the module:
-1. Clone the repo you need (Use TruSTAR2 unless you have a specific version to use TruSTAR1.3)
-2. Run `pip install /path/to/repo` where `/path/to/repo` is the path to the location you cloned the TruSTAR Github Library
-3. Test the instillation by attempting to import a TruSTAR module from a Python shell.
+1. Clone the repo you need (Use TruSTAR2 unless you have a specific version to use TruSTAR 1.3)
+2. Run `pip install /path/to/repo` where `/path/to/repo` is the path to the location you cloned the TruSTAR Repo
+3. Test your install by attempting to import a TruSTAR module from a Python shell. IE: `from trustar2 import TruStar` and if that works you are all set.
 
 ### Graph API Config
 The process for integrating with Sentinel and Windows Defender is a little more involved. Microsoft has a fairly in-depth [guide](https://docs.microsoft.com/en-us/azure/sentinel/connect-threat-intelligence-tip). RH-ISAC also has a guide in progess with additional screenshots in the works and this documentation will be updated with a link shortly. 

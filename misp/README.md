@@ -22,7 +22,7 @@ A valid **rh-isac.conf** file is the easiest way to setup access and authenticat
    4. Add a comment to the comment field to easily identify the key in the future. If you dont plan to write any data back to the RH-ISAC MISP instance, we also recomend using the read only flag to limit unnecessary permissions on the key.
    5. Finally choose `Submit`
    6. Copy the key presented on the next screen into your **rh-isac.conf** where it says `<MISP API KEY HERE>`
-3. Save the file in the same directory as the MISP Python scripts you would like to go
+3. Save the file in the same directory as the MISP Python scripts you would like to run.
 
 ## PyMISP - Python Library to access MISP
 1. Documentation: https://pymisp.readthedocs.io
