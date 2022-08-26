@@ -1,0 +1,17 @@
+# RH-ISAC.conf for the Splunk - MISP Integrations
+
+# RH-ISAC MISP - Check the ./misp/README.md file for details.
+[RH-ISAC MISP]
+key = <MISP API KEY>
+
+# Splunk - Check ./misp/splunk/README.md
+[splunk]
+base_url = https://localhost:8089
+username = <SPLUNK USERNAME>
+password = <SPLUNK PASSWORD>
+headers = <SPLUNK HEADERS>
+
+[splunk-es]
+base_url = https://localhost:8089
+token = <SPLUNK AUTH TOKEN>
+headers = <SPLUNK HEADERS>
