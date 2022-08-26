@@ -11,14 +11,14 @@ import sys
 import urllib3
 from datetime import datetime, timedelta, timezone
 from typing import List, Dict
-
+import configparser
 import requests
 
 from trustar2 import TruStar, Observables
 
-__author__ = 'Bradley Logan'
-__version__ = '0.91'
-__email__ = 'bradley.logan@rhisac.org'
+__author__ = 'Bradley Logan, Ian Furr'
+__version__ = '0.92'
+__email__ = 'bradley.logan@rhisac.org, ian.furr@rhisac.org'
 
 # If you have decided to not add certificate verification,
 # uncomment the below line to disable the InsecureRequestWarning
@@ -28,22 +28,31 @@ urllib3.disable_warnings()
 ENCLAVE_IDS = [
     "7a33144f-aef3-442b-87d4-dbf70d8afdb0",  # RH-ISAC Vetted Indicators
 ]
+
+CONFIG_PATH = "./trustar/splunk/rh-isac.conf"
+TRUSTAR_CONFIG_SECTION = "trustar"
+SPLUNK_CONFIG_SECTION = "splunk-es"
+
 SPLUNK_HEADERS = None
 SPLUNK_BASE_URL = None
 
 
-def can_access_splunk() -> bool:
+def can_access_splunk(splunk_creds: dict) -> bool:
     """Get Splunk authentication token & url, and test connection/access.
 
+    Parameters
+    splunk_creds: dict
+        A dict of configuration/credential items pulled from rh-isac.conf
+        
     Returns
     _______
     bool
         True if successful, False if not successful.
     """
     global SPLUNK_HEADERS, SPLUNK_BASE_URL
-    s_conf = TruStar.config_from_file('splunk.conf', 'main')
-    SPLUNK_BASE_URL = s_conf['base_url']
-    SPLUNK_HEADERS = {'Authorization': f"Bearer {s_conf['token']}"}
+
+    SPLUNK_BASE_URL = splunk_creds.get('base_url')
+    SPLUNK_HEADERS = {'Authorization': f"Bearer {splunk_creds.get('token')}"}
 
     url = f"{SPLUNK_BASE_URL}/services/authentication/current-context"
     try:
@@ -191,9 +200,13 @@ def categorize(inds: List[dict]) -> Dict[str, List[dict]]:
     return cats
 
 
-def retrieve_last24h_obls() -> List[dict]:
+def retrieve_last24h_obls(ts_credentials: dict) -> List[dict]:
     """Query the TruSTAR 2.0 API for last 24 hours of Observables and return them.
 
+    Parameters
+    ts_credentials: dict
+        A dict of configuration/credential items pulled from rh-isac.conf
+        
     Returns
     _______
     list[dict]
@@ -202,7 +215,7 @@ def retrieve_last24h_obls() -> List[dict]:
 
     # Instantiate API Object
     try:
-        ts = TruStar.config_from_file(config_file_path="./trustar2.conf", config_role="rh-isac_vetted")
+        ts = TruStar(api_key=ts_credentials.get('user_api_key'),api_secret=ts_credentials.get('user_api_secret'),client_metatag=ts_credentials.get('client_metatag'))
     except KeyError as e:
         print(f'{str(e)[1:-1]} in config file "trustar2.conf". Exiting...')
         exit()
@@ -254,14 +267,43 @@ def main():
     _______
     None
     """
-    raw_iocs = retrieve_last24h_obls()
+    conf = configparser.ConfigParser()    
+    if not conf.read(CONFIG_PATH):
+        if not conf.read("../" + CONFIG_PATH):
+            print(f'Config file {CONFIG_PATH} not found')
+            exit()
+    if TRUSTAR_CONFIG_SECTION not in conf.sections():
+        print(f'Missing config section "{TRUSTAR_CONFIG_SECTION}". Please check the example configuration and try again.')
+        exit()
+    if SPLUNK_CONFIG_SECTION not in conf.sections():
+        print(f'Missing config section "{SPLUNK_CONFIG_SECTION}". Please check the example configuration and try again.')
+        exit()
+    
+    try:
+        ts_credentials = {
+            "user_api_key":conf['trustar']['user_api_key'],
+            "user_api_secret":conf['trustar']['user_api_secret'],
+            "client_metatag":conf['trustar']['client_metatag'],
+        }
+
+        splunk_creds = {
+            "base_url": conf[SPLUNK_CONFIG_SECTION]['base_url'],
+            "token": conf[SPLUNK_CONFIG_SECTION]['token'],
+            "headers": conf[SPLUNK_CONFIG_SECTION]['headers']
+        }
+
+    except KeyError as e:
+        print(f'Cannot find "{e}" in file {CONFIG_PATH}')
+        exit()
+    
+    raw_iocs = retrieve_last24h_obls(ts_credentials)
     print(f'Retrieved {len(raw_iocs)} IOCs from TruSTAR')
     if not raw_iocs:
         print('No IOCs found in last 24h. Nothing to do.')
         sys.exit()
 
     ioc_cats = categorize(raw_iocs)
-    have_splunk_access = can_access_splunk()
+    have_splunk_access = can_access_splunk(splunk_creds)
     if have_splunk_access:
         for lookup_name, iocs in ioc_cats.items():
             if not iocs:

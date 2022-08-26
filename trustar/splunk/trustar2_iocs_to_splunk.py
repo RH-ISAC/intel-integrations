@@ -6,18 +6,17 @@
    Associated documentation is available upon request.
 """
 
-import json
 import requests
 import sys
-import urllib3
 from datetime import datetime, timedelta, timezone
 from typing import List
+import configparser
 
 from trustar2 import TruStar, Observables
 
-__author__ = 'Bradley Logan'
-__version__ = '0.90'
-__email__ = 'bradley.logan@rhisac.org'
+__author__ = 'Bradley Logan, Ian Furr'
+__version__ = '0.91'
+__email__ = 'bradley.logan@rhisac.org, ian.furr@rhisac.org'
 
 
 # Override defaults here
@@ -28,21 +27,28 @@ SPLUNK_HEADERS = None
 SPLUNK_BASE_URL = None
 SPLUNK_KVSTORE_NAME = 'threat_intel'
 
+CONFIG_PATH = "./trustar/splunk/rh-isac.conf"
+TRUSTAR_CONFIG_SECTION = "trustar"
+SPLUNK_CONFIG_SECTION = "splunk"
 
-def auth_to_splunk() -> bool:
+
+def auth_to_splunk(splunk_creds: dict) -> bool:
     """Authenticate to Splunk.
 
+    Parameters
+    splunk_creds: dict
+        A dict of configuration/credential items pulled from rh-isac.conf
+        
     Returns
     _______
     bool
         True if successful, False if not successful.
     """
     global SPLUNK_HEADERS, SPLUNK_BASE_URL
-    s_conf = TruStar.config_from_file('splunk.conf', 'main')
-    SPLUNK_BASE_URL = s_conf['base_url']
+    SPLUNK_BASE_URL = splunk_creds['base_url']
     auth_data = {
-        'username': s_conf['username'],
-        'password': s_conf['password'],
+        'username': splunk_creds['username'],
+        'password': splunk_creds['password'],
         'output_mode': 'json',
     }
 
@@ -142,6 +148,10 @@ def build_field_values(inds) -> List[dict]:
     iocs : list[dict]
         The IOCs to modify
 
+    Parameters
+    ts_credentials: dict
+        A dict of configuration/credential items pulled from rh-isac.conf
+
     Returns
     _______
     list[dict]
@@ -180,7 +190,7 @@ def build_field_values(inds) -> List[dict]:
         output.append(fields)
     return output
 
-def retrieve_last24h_obls() -> List[dict]:
+def retrieve_last24h_obls(ts_credentials: dict) -> List[dict]:
     """Query the TruSTAR 2.0 API for last 24 hours of Observables and return them.
 
     Returns
@@ -191,7 +201,7 @@ def retrieve_last24h_obls() -> List[dict]:
 
     # Instantiate API Object
     try:
-        ts = TruStar.config_from_file(config_file_path="./trustar2.conf", config_role="rh-isac_vetted")
+        ts = TruStar(api_key=ts_credentials.get('user_api_key'),api_secret=ts_credentials.get('user_api_secret'),client_metatag=ts_credentials.get('client_metatag'))
     except KeyError as e:
         print(f'{str(e)[1:-1]} in config file "trustar2.conf". Exiting...')
         exit()
@@ -237,14 +247,44 @@ def retrieve_last24h_obls() -> List[dict]:
     return out
 
 if __name__ == '__main__':
-    raw_iocs = retrieve_last24h_obls()
+    conf = configparser.ConfigParser()    
+    if not conf.read(CONFIG_PATH):
+        if not conf.read("../" + CONFIG_PATH):
+            print(f'Config file {CONFIG_PATH} not found')
+            exit()
+    if TRUSTAR_CONFIG_SECTION not in conf.sections():
+        print(f'Missing config section "{TRUSTAR_CONFIG_SECTION}". Please check the example configuration and try again.')
+        exit()
+    if SPLUNK_CONFIG_SECTION not in conf.sections():
+        print(f'Missing config section "{SPLUNK_CONFIG_SECTION}". Please check the example configuration and try again.')
+        exit()
+    
+    try:
+        ts_credentials = {
+            "user_api_key":conf['trustar']['user_api_key'],
+            "user_api_secret":conf['trustar']['user_api_secret'],
+            "client_metatag":conf['trustar']['client_metatag'],
+        }
+
+        splunk_creds = {
+            "base_url": conf[SPLUNK_CONFIG_SECTION]['base_url'],
+            "username": conf[SPLUNK_CONFIG_SECTION]['username'],
+            "password": conf[SPLUNK_CONFIG_SECTION]['password'],
+            "headers": conf[SPLUNK_CONFIG_SECTION]['headers']
+        }
+
+    except KeyError as e:
+        print(f'Cannot find "{e}" in file {CONFIG_PATH}')
+        exit()
+    
+    raw_iocs = retrieve_last24h_obls(ts_credentials)
     print(f'Retrieved {len(raw_iocs)} IOCs from TruSTAR')
     if not raw_iocs:
         print('No IOCs found in last 24h. Nothing to do.')
         sys.exit()
 
     iocs = build_field_values(raw_iocs)
-    auth_result = auth_to_splunk()
+    auth_result = auth_to_splunk(splunk_creds)
     if auth_result:
         result = post_iocs_to_splunk(iocs)
         if result:

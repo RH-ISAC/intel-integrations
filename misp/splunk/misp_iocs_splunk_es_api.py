@@ -40,6 +40,8 @@ def can_access_splunk(splunk_creds: dict) -> bool:
     bool
         True if successful, False if not successful.
     """
+    global SPLUNK_HEADERS, SPLUNK_BASE_URL
+
     SPLUNK_BASE_URL = splunk_creds.get('base_url')
     SPLUNK_HEADERS = {'Authorization': f"Bearer {splunk_creds.get('token')}"}
 
@@ -258,9 +260,13 @@ if __name__ == '__main__':
     
     try:
         MISP_KEY = conf[MISP_CONFIG_SECTION]['Key']
-        SPLUNK_BASE_URL= conf[SPLUNK_CONFIG_SECTION]['base_url'],
-        SPLUNK_TOKEN = conf[SPLUNK_CONFIG_SECTION]['token']
-        SPLUNK_HEADERS = conf[SPLUNK_CONFIG_SECTION]['headers']
+        
+        splunk_creds = {
+            "base_url": conf[SPLUNK_CONFIG_SECTION]['base_url'],
+            "token": conf[SPLUNK_CONFIG_SECTION]['token'],
+            "headers": conf[SPLUNK_CONFIG_SECTION]['headers']
+        
+        }
 
     except KeyError as e:
         print(f'Cannot find "{e}" in file {CONFIG_PATH}')
