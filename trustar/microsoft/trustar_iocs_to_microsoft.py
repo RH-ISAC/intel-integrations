@@ -290,7 +290,7 @@ def upload_iocs(iocs: List[dict], credentials: dict) -> None:
             # If we dont have a type setup for this IOC, dont attempt to submit it, but add it to the error list. 
             print(f"Unrecognized IOC Type: {type}. IOC value: {ioc.get('value')}")
             errored_iocs.append(ioc)
-            pass
+            continue
             
         # Handle various return conditions
         # If a response is not returned

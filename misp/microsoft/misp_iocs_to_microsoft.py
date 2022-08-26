@@ -219,7 +219,7 @@ def upload_iocs(iocs: List[dict], credentials: dict) -> None:
         # Process IOC according to the type it is 
         type = ioc.get('type')
         # Lots of duplication here, but it was done with the idea of adding extra details in the future as they are available with other feeds.
-        if type == "domain":
+        if type == "domain" or type == "hostname":
             if debug:
                 print(f"domain: {ioc.get('value')}")
             domain_data = {
@@ -288,7 +288,7 @@ def upload_iocs(iocs: List[dict], credentials: dict) -> None:
             # If we dont have a type setup for this IOC, dont attempt to submit it, but add it to the error list. 
             print(f"Unrecognized IOC Type: {type}. IOC value: {ioc.get('value')}")
             errored_iocs.append(ioc)
-            pass
+            continue
             
         # Handle various return conditions
         # If a response is not returned

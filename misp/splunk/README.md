@@ -33,7 +33,7 @@ username = <SPLUNK USERNAME>
 password = <SPLUNK PASSWORD>
 headers = <SPLUNK HEADERS>
 ```
-The `base_url` field will be the hostname of your splunk instance, followed by the port you have exposed (similar to the example text above). The `username` and `password` should be the account details for whichever account you've set up to access your splunk instance, and has the permissions to write IOCs. Lastly the `headers` field can be used if your splunk instance required additional headers.
+The `base_url` field will be the hostname of your splunk instance, followed by the port you have exposed (similar to the example text above). The `username` and `password` should be the account details for whichever account you've set up to access your splunk instance, and has the permissions to write IOCs.
 
 #### Splunk ES
 ```
@@ -42,8 +42,7 @@ base_url = https://localhost:8089
 token = <ENTER AUTH TOKEN HERE>
 headers = <SPLUNK HEADERS>
 ```
-The `base_url` field will be the hostname of your splunk instance, followed by the port you have exposed (similar to the example text above). The `token` field should contain the splunk access token that you have created, that has the permissions to write IOCs. Lastly the `headers` field can be used if your splunk instance required additional headers.
-
+The `base_url` field will be the hostname of your splunk instance, followed by the port you have exposed (similar to the example text above). The `token` field should contain the splunk access token that you have created, that has the permissions to write IOCs.
 # Documentation/Reference
 ## PyMISP - Python Library to access MISP
 1. Documentation: https://pymisp.readthedocs.io
