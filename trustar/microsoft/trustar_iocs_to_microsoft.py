@@ -31,6 +31,7 @@ ENCLAVE_IDS = [
     "59cd8570-5dce-4e5b-b09c-9807530a7086",  # RH-ISAC Vetted Indicators
 ]
 
+CONFIG_PATH = "./trustar/microsoft/rh-isac.conf"
 window = 120 # Number of days to retain IOC
 debug = False # Set to "True" for added logging/visiblity
 
@@ -323,8 +324,11 @@ def upload_iocs(iocs: List[dict], credentials: dict) -> None:
 
 
 if __name__ == '__main__':
-    conf = configparser.ConfigParser()
-    conf.read("./rh-isac.conf")
+    conf = configparser.ConfigParser()    
+    if not conf.read(CONFIG_PATH):
+        if not conf.read("../" + CONFIG_PATH):
+            print(f'Config file {CONFIG_PATH} not found')
+            exit()
     
     if 'microsoft' not in conf.sections():
         print(f'Missing config section "microsoft". Please check the example configuration and try again.')

@@ -33,7 +33,7 @@ TYPE_MAP = {
 
 
 # Override defaults here
-CONFIG_PATH = "./rh-isac.conf"
+CONFIG_PATH = "./misp/crowdstrike/rh-isac.conf"
 MISP_CONFIG_SECTION = "RH-ISAC MISP"
 MISP_URL = "https://misp.rhisac.org"
 OUTPUT_FIELDS = ('value', 'type', 'timestamp', 'Tag', 'Event')

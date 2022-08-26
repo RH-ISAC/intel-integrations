@@ -32,7 +32,7 @@ TYPE_MAP = {
     'SHA256': 'sha256',
 }
 # Override defaults here
-CONFIG_PATH = "./rh-isac.conf"
+CONFIG_PATH = "./trustar/crowdstrike/rh-isac.conf"
 TRUSTAR_CONFIG_SECTION = "TRUSTAR"
 
 
