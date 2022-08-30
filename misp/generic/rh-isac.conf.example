@@ -1,0 +1,12 @@
+# This is the RH-ISAC Integrations configuration File (rh-isac.conf)
+# It can be used to specify authentication details for services we 
+# offer integrations for. 
+
+# Variables should not be wrapped in quotes. The format for new fields should be:
+# key followed by a single space, an equal sign, then a trailing space and the value. 
+[example]
+key = value 
+
+# RH-ISAC MISP - Check the ./misp/README.md file for details.
+[RH-ISAC MISP]
+key = <MISP API KEY HERE>

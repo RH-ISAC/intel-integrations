@@ -1,30 +1,55 @@
-# Sentinel Integration Script
-> **Warning**
-> Use the content in this repository at your own risk. RH-ISAC will not be held responsible for data loss, nor any other problems resulting from the use of this content. **THIS SCRIPT IS A BETA VERSION**
+# ./INTEL-INTEGRATIONS/TRUSTAR/MICROSOFT 
+A storage place for Microsoft related integrations for the RH-ISAC TruSTAR instance.
 
 > **Warning**
-> The section of the Microsoft Graph API used to create threat indicators is a beta version which may change at any time. Please alert the RH-ISAC staff if you begin to experience issues due to any changes. 
-
+> Use the content in this repository at your own risk. RH-ISAC will not be held responsible for data loss, nor any other problems resulting from the use of this content. **This script is a beta version and intended to be used as an example.**
 
 ## Requirements
-The Graph API script requires:
-1. The TruSTAR Python SDK
-   1. To install, follow the instructions in the TruStar directory of this repo
-3. A valid **aad_config.conf** file
-   1. See *CONFIGURATION* section below
+- Python 3.9+
+- TruSTAR Python SDK (trustar-sdk2-proto or trustar-python-sdk1 See instructions below)
+
+> **Note**
+> We strongly recomend the usage of [virtual environments](https://docs.python.org/3/library/venv.html) to provide a clean space to install dependancies.
 
 ## Configuration
-A valid **aad_config.conf** file is requred to authenticate to the TruSTAR and MS Graph APIs.
-1. Make a copy of **aad_config_example.conf** and name it **aad_config.conf**.
-2. Lookup your TruSTAR API Key and API Secret in TruSTAR station and place them in the spots specified in the **trustar2.conf** file
-   1. Keys can be rotated and accessed here: https://station.trustar.co/settings/api
-3. Follow the instructions in the *Configuring the Azure AD App* section below to obtain the App credentials in the **aad** section of the config.
-4. The **product** field can have one of two strings, either "Azure Sentinel" or "Microsoft Defender ATP". Use whichever matches the product you are integrating with.
-5. Save the file in the same directory as your TruSTAR Python script
+These scripts use a configuration file named **rh-isac.conf**. It contains the details to authenticate to the RH-ISAC TruSTAR Instance, and the target of each of the integrations. There are example files (**rh-isac.conf.example**) inside of each integration directory that contain the details needed to authenticate to the targets of that integration. 
 
-## Configuring the Azure AD App
-The integration requires access to the MS Graph API which is configured through an Azure Active Direcory Application. 
-Follow the instructions in this guide from microsoft: https://docs.microsoft.com/en-us/azure/sentinel/connect-threat-intelligence-tip
+### TruSTAR Configuration
+To obtain your TruSTAR API details, authenticate to TruSTAR and then browse to `https://station.trustar.co/settings/api`. From there you can access or rotate your API and Secret key. 
+
+```
+[trustar]
+auth_endpoint = https://api.trustar.co/oauth/token
+api_endpoint = https://api.trustar.co/api/2.0
+user_api_key = <TruSTAR API KEY HERE>
+user_api_secret = <TruSTAR SECRET KEY HERE>
+# RH-ISAC Vetted IOCs Enclave
+enclave_ids = 7a33144f-aef3-442b-87d4-dbf70d8afdb0
+client_metatag = RHISAC Vetted Indicator AAD Script
+```
+
+The `auth_endpoint` and `api_endpoint` fields are both TruSTAR defaults, and shouldnt need to be changed unless you are switching which version of the API that you are targeting. The `user_api_key` and `user_api_secret` are your API creds obtained from `https://station.trustar.co/settings/api`. The `enclave_ids` field will determine what TruSTAR Enclave you retrieve data from. The default value, the RH-ISAC Vetted Indicators Enclave, is populated by RH-ISAC Analysts each day with validated indicators from our members. The field will accept multiple enclaves, so if desired you could add a comma, followed by the Enclave ID of another enclave you wish to pull data from. The last field, `client_metatag` is an arbitrary string the API uses to gather metadata. You can leave it as the default, or change it to whatever you see fit. 
+
+#### TruSTAR Python Module Configuration
+TruSTAR has two Python modules (*trustar-python-sdk1* and *trustar-sdk2-proto*) they host for interacting with the TruSTAR APIs. RH-ISAC has cloned and updated them to the latest requirements so that they can be used with our scripts. The [TruSTAR v2.0 API](https://github.com/RH-ISAC/trustar-sdk2-proto) module should be used for all new integrations. However, if you require access to the old APIs you can find the [TruSTAR 1.3 API](https://github.com/RH-ISAC/trustar-python-sdk1) module on our github as well.
+
+To install the module:
+1. Clone the repo you need (Use TruSTAR2 unless you have a specific version to use TruSTAR 1.3)
+2. Run `pip install /path/to/repo` where `/path/to/repo` is the path to the location you cloned the TruSTAR Repo
+3. Test your install by attempting to import a TruSTAR module from a Python shell. IE: `from trustar2 import TruStar` and if that works you are all set.
+
+### Graph API Config
+The process for integrating with Sentinel and Windows Defender is a little more involved. Microsoft has a fairly in-depth [guide](https://docs.microsoft.com/en-us/azure/sentinel/connect-threat-intelligence-tip). RH-ISAC also has a guide in progess with additional screenshots in the works and this documentation will be updated with a link shortly. 
+
+```
+[microsoft]
+product = Azure Sentinel
+tenantId = <MICROSOFT AZURE TENANT ID HERE>
+appId = <MICROSOFT GRAPH API APPID HERE>
+appSecret = <MICROSOFT GRAPH API SECRET KEY HERE>
+```
+
+The `product` field dictates which Microsoft product you are targeting, it can either be "Azure Sentinel" or "Microsoft Defender ATP". The `tenantId` field should be filled with your Tenant ID. (This can be found in various places in the Azure UI, or via the Powershell `Connect-AzAccount` commandlet.) During the application setup process you should find and copy the `appId` and `appSecret` as the secret will *not be shown again*.
 
 
 # Documentation/Reference
@@ -37,8 +62,7 @@ Follow the instructions in this guide from microsoft: https://docs.microsoft.com
    1. Documentation: https://docs.trustar.co/api/index.html
    2. Usage Policy: https://support.trustar.co/article/m5kl5anpiz-api-rate-limit-quota
 
-## Microsoft
-1. TIP Integration Progess
-    1. Overview: https://docs.microsoft.com/en-us/azure/sentinel/connect-threat-intelligence-tip
-2. Indicator API Fields
-   https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta
+## Microsoft Graph API/Sentinel/Defender Resources
+1. Threat Indicator Graph API Overview: https://docs.microsoft.com/en-us/graph/api/resources/tiindicator?view=graph-rest-beta
+2. TIP Integration Guide: https://docs.microsoft.com/en-us/azure/sentinel/connect-threat-intelligence-tip
+

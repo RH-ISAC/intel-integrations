@@ -1,5 +1,5 @@
 {
-    "station": {
+    "rh-isac-vetted": {
         "api_key": "<COPY API KEY HERE>",
         "api_secret": "<COPY API SECRET HERE>",
         "client_metatag": "<METATAG>"

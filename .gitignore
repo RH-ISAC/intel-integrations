@@ -132,11 +132,11 @@ dmypy.json
 .DS_Store
 
 # Tool Conf
-misp.conf
-splunk.conf
-trustar.conf
-trustar2.conf
-cs_config.json
+*.conf
+
+# Explicit Exclude for all example config files
+! *.example
+! *.conf.example
 
 # Script Output
 *.json

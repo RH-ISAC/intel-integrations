@@ -1,0 +1,23 @@
+# RH-ISAC.conf for the Microsoft Sentinel/Defender - TruSTAR Integration
+
+# Splunk - Check ./trustar/splunk/README.md
+[splunk]
+base_url = https://localhost:8089
+username = <SPLUNK USERNAME>
+password = <SPLUNK PASSWORD>
+headers = <SPLUNK HEADERS>
+
+[splunk-es]
+base_url = https://localhost:8089
+token = <SPLUNK AUTH TOKEN>
+headers = <SPLUNK HEADERS>
+
+# Trustar - Check ./trustar/README.md
+[trustar]
+auth_endpoint = https://api.trustar.co/oauth/token
+api_endpoint = https://api.trustar.co/api/2.0
+user_api_key = <TruSTAR API Key HERE>
+user_api_secret = <TruSTAR Secret Key HERE>
+# RH-ISAC Vetted IOCs Enclave
+enclave_ids = 7a33144f-aef3-442b-87d4-dbf70d8afdb0
+client_metatag = RHISAC Vetted Indicator AAD Script

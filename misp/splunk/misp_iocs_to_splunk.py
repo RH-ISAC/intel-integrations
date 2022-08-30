@@ -1,54 +1,54 @@
 #!/usr/bin/env python3
-"""Retrieve last 24 hours of IOCs from TruSTAR and push to Splunk via API.
-   Use vetted enclave if none specified in trustar.conf file.
+"""Retrieve last 24 hours of IOCs from MISP and push to Splunk via API.
 
    NOTE: This script is a beta version. Use at your own risk.
-   Associated documentation is available upon request.
 """
 
 import requests
 import sys
-from datetime import datetime, timedelta, timezone
-from typing import List
 import configparser
 
-from trustar2 import TruStar, Observables
+from typing import List
+from pymisp import PyMISP
 
 __author__ = 'Bradley Logan, Ian Furr'
-__version__ = '0.91'
-__email__ = 'bradley.logan@rhisac.org, ian.furr@rhisac.org'
+__version__ = '0.4'
+__email__ = 'bradley.logan@rhisac.org. Ian Furr'
 
 
 # Override defaults here
-ENCLAVE_IDS = [
-    "7a33144f-aef3-442b-87d4-dbf70d8afdb0",  # RH-ISAC Vetted Indicators
-]
+# Splunk
+SPLUNK_CONFIG_SECTION = "splunk"
 SPLUNK_HEADERS = None
 SPLUNK_BASE_URL = None
 SPLUNK_KVSTORE_NAME = 'threat_intel'
 
-CONFIG_PATH = "./trustar/splunk/rh-isac.conf"
-TRUSTAR_CONFIG_SECTION = "trustar"
-SPLUNK_CONFIG_SECTION = "splunk"
+# MISP
+CONFIG_PATH = "./misp/splunk/rh-isac.conf"
+MISP_CONFIG_SECTION = "RH-ISAC MISP"
+MISP_URL = "https://misp.rhisac.org"
+OUTPUT_FIELDS = ('value', 'type', 'timestamp', 'Tag', 'Event')
+VETTED_TAG = "rhisac: vetted"
 
 
-def auth_to_splunk(splunk_creds: dict) -> bool:
+
+def auth_to_splunk(auth_details: dict) -> bool:
     """Authenticate to Splunk.
-
-    Parameters
-    splunk_creds: dict
-        A dict of configuration/credential items pulled from rh-isac.conf
-        
+    
+    Params
+    _______
+    auth_details: dict
+        Dictionary of authentication details pulled from rh-isac.conf
     Returns
     _______
     bool
         True if successful, False if not successful.
     """
     global SPLUNK_HEADERS, SPLUNK_BASE_URL
-    SPLUNK_BASE_URL = splunk_creds['base_url']
+    SPLUNK_BASE_URL = auth_details.get('BASE_URL')
     auth_data = {
-        'username': splunk_creds['username'],
-        'password': splunk_creds['password'],
+        'username': auth_details.get('username'),
+        'password': auth_details.get('password'),
         'output_mode': 'json',
     }
 
@@ -58,11 +58,11 @@ def auth_to_splunk(splunk_creds: dict) -> bool:
                                   data=auth_data,
                                   verify=False)
     except Exception as e:
-        print(f"Unable to connect to Splunk. Check the base_url in your splunk.conf file: {str(e)}")
+        print(f"Unable to connect to Splunk. Check the base_url in your rh-isac.conf file: {str(e)}")
         return False
 
     if auth_resp.status_code == 401:
-        print("Failed to authenticate to Splunk. Verify the username/password in your splunk.conf file")
+        print("Failed to authenticate to Splunk. Verify the username/password in your rh-isac.conf file are correct")
     try:
         SPLUNK_HEADERS = {'Authorization': f"Splunk {auth_resp.json()['sessionKey']}"}
     except Exception as e:
@@ -148,10 +148,6 @@ def build_field_values(inds) -> List[dict]:
     iocs : list[dict]
         The IOCs to modify
 
-    Parameters
-    ts_credentials: dict
-        A dict of configuration/credential items pulled from rh-isac.conf
-
     Returns
     _______
     list[dict]
@@ -161,18 +157,12 @@ def build_field_values(inds) -> List[dict]:
     for ind in inds:
         fields = {
             'value': ind['value'],
-            'ioc_type': ind['indicatorType'].lower(),
-            'updated': int(ind['lastSeen'] / 1000),
+            'ioc_type': ind['type'].lower(),
+            'updated': int(ind['timestamp']) / 1000,
             'source': "RH-ISAC Vetted",
-            'tags': " | ".join([t['name'] for t in ind['tags']]),
+            'tags': " | ".join([t['event'] for t in ind['tags']]),
         }
-        if ind['indicatorType'] in ('CIDR_BLOCK', 'IP'):  # add cidr value
-            try:
-                assert int(ind['value'].split('/', 1)[1]) <= 32
-                fields['cidr'] = ind['value']
-            except:
-                fields['cidr'] = f"{ind['value']}/32"
-        elif ind['indicatorType'] == 'URL':  # handle domains with "URL" type
+        if ind['type'] == 'url':  # handle domains with "URL" type
             value = ind['value']
             if '://' in value:  # get rid of URL scheme
                 _, value = ind['value'].split('://', 1)
@@ -183,109 +173,116 @@ def build_field_values(inds) -> List[dict]:
                 else:  # just a domain with '/' at the end
                     fields['ioc_type'] = 'domain'
                     fields['value'] = value[:-1]
-            else:  # no path
-                if '@' not in value and ':' not in value:
-                    fields['ioc_type'] = 'domain'
-                    fields['value'] = value
+        if ind['type'] not in('ip-dst', 'email-src', 'md5', 'sha256', 'sha1', 'domain', 'url'):
+            print(f"Error parsing IOC type: {ind['type']} \n Please record this mesage and notify RH-ISAC staff.")
+            continue
         output.append(fields)
     return output
 
-def retrieve_last24h_obls(ts_credentials: dict) -> List[dict]:
-    """Query the TruSTAR 2.0 API for last 24 hours of Observables and return them.
+
+def get_last24h_vetted_iocs(key: str) -> List[dict]:
+    """Query the MISP API for last 24 hours of RH-ISAC Vetted IOCs and return
 
     Returns
     _______
     list[dict]
-        A list of Observables as dictionaries
+        A list of IOCs as dictionaries
     """
 
     # Instantiate API Object
     try:
-        ts = TruStar(api_key=ts_credentials.get('user_api_key'),api_secret=ts_credentials.get('user_api_secret'),client_metatag=ts_credentials.get('client_metatag'))
-    except KeyError as e:
-        print(f'{str(e)[1:-1]} in config file "trustar2.conf". Exiting...')
+        misp = PyMISP(url=MISP_URL, key=key)
+    except Exception as e:
+        print(e)
         exit()
 
-    # Setup to/from times and convert timestamps to milliseconds since epoch
-    to_time = datetime.now(timezone.utc)
-    from_time = to_time - timedelta(hours=24)  # last 24 hours
-    print(f'\nRetrieving all IOCs between UTC {from_time} and {to_time}...')
-    from_time = int(from_time.timestamp() * 1000)
-    to_time = int(to_time.timestamp() * 1000)
+    print(f'\nGetting all IOCs added to MISP in past 24 hours...')
 
-    # Query API for Observables
-    # To avoid API limits, query for 1000 Observables at a time
-    pages = (
-        Observables(ts)
-            .set_enclave_ids(ENCLAVE_IDS)
-            .set_from(from_time)
-            .set_to(to_time)
-            .set_page_size(1000)  # Avoid API Limits
-            .search()
-    )
-    obls = [obl for page in pages for obl in page.data]
+    # Query API for IOCs
+    try:
+        results = misp.search('attributes', tags=[VETTED_TAG], timestamp='1d')
+        iocs = results['Attribute']
+        print(f'Got {len(iocs)} IOCs from MISP')
+    except Exception as e:
+        print(f'Error while query MISP for IOCs: {str(e)}')
+        exit()
 
-    # only include most commonly used fields
-    out = [
-        {
-            'value': obl.value,
-            'indicatorType': obl.type,
-            'priorityLevel': obl.priorityLevel,
-            'correlationCount': obl.correlationCount,
-            'whitelisted': obl.correlationCount,
-            'weight': obl.weight,
-            'reason': obl.reason,
-            'source': obl.source,
-            'sightings': obl.sightings,
-            'notes': obl.notes,
-            'tags': obl.tags,
-            'firstSeen': obl.first_seen,
-            'lastSeen': obl.last_seen,
-            'enclave_Ids': obl.enclaveIds,
-        } for obl in obls
-    ]
+    return iocs
+
+
+def filter_results(iocs: List[dict]) -> List[dict]:
+    """Take a list of IOC dictionaries and return a filtered list
+
+    Returns
+    _______
+    list[dict]
+        A list of IOCs as dictionaries
+
+    Parameters
+    ----------
+    list[dict]
+        A list of IOCs as dictionaries
+    """
+    out = []
+    for ioc in iocs:
+        keep = {}
+        for k,v in ioc.items():
+            if k not in OUTPUT_FIELDS:
+                continue
+            else:
+                if k == 'Tag':
+                    keep['tags'] = "|".join([x['name'] for x in v if x['name'] != VETTED_TAG])
+                elif k == 'Event':
+                    keep['event'] = v['info']
+                else:
+                    keep[k] = v
+        out.append(keep)
     return out
 
-if __name__ == '__main__':
+
+def main():
+    # Obtain Credentials
     conf = configparser.ConfigParser()    
     if not conf.read(CONFIG_PATH):
-        if not conf.read("../" + CONFIG_PATH):
+        if not conf.read(CONFIG_PATH):
             print(f'Config file {CONFIG_PATH} not found')
             exit()
-    if TRUSTAR_CONFIG_SECTION not in conf.sections():
-        print(f'Missing config section "{TRUSTAR_CONFIG_SECTION}". Please check the example configuration and try again.')
-        exit()
+    
+    # Check config for relevant sections
     if SPLUNK_CONFIG_SECTION not in conf.sections():
         print(f'Missing config section "{SPLUNK_CONFIG_SECTION}". Please check the example configuration and try again.')
         exit()
-    
-    try:
-        ts_credentials = {
-            "user_api_key":conf['trustar']['user_api_key'],
-            "user_api_secret":conf['trustar']['user_api_secret'],
-            "client_metatag":conf['trustar']['client_metatag'],
-        }
+    if MISP_CONFIG_SECTION not in conf.sections():
+        print(f'Missing config section "{MISP_CONFIG_SECTION}". Please check the example configuration and try again.')
+        exit()
 
-        splunk_creds = {
-            "base_url": conf[SPLUNK_CONFIG_SECTION]['base_url'],
-            "username": conf[SPLUNK_CONFIG_SECTION]['username'],
-            "password": conf[SPLUNK_CONFIG_SECTION]['password'],
-            "headers": conf[SPLUNK_CONFIG_SECTION]['headers']
+    try:
+        misp_key = conf[MISP_CONFIG_SECTION]['Key']
+        splunk_credentials = {
+            "splunk_user": conf[SPLUNK_CONFIG_SECTION]['username'],
+            "splunk_pass": conf[SPLUNK_CONFIG_SECTION]['password'],
+            "SPLUNK_BASE_URL": conf[SPLUNK_CONFIG_SECTION]['base_url'],
         }
 
     except KeyError as e:
         print(f'Cannot find "{e}" in file {CONFIG_PATH}')
         exit()
     
-    raw_iocs = retrieve_last24h_obls(ts_credentials)
-    print(f'Retrieved {len(raw_iocs)} IOCs from TruSTAR')
+    raw_iocs = get_last24h_vetted_iocs(misp_key)
+    
+    print(f'Retrieved {len(raw_iocs)} IOCs from MISP')
     if not raw_iocs:
         print('No IOCs found in last 24h. Nothing to do.')
         sys.exit()
 
-    iocs = build_field_values(raw_iocs)
-    auth_result = auth_to_splunk(splunk_creds)
+    # Filter MISP output to remove extranious fields
+    filtered_iocs = filter_results(raw_iocs)
+
+    # Process IOCs for Splunk Import
+    iocs = build_field_values(filtered_iocs)    
+    auth_result = auth_to_splunk(splunk_credentials)
     if auth_result:
+        # Post to Splunk
         result = post_iocs_to_splunk(iocs)
         if result:
             print(f'Successfully uploaded {len(iocs)} IOCs to Splunk')
@@ -293,3 +290,6 @@ if __name__ == '__main__':
             print(f'Failed to upload IOCs to Splunk')
     else:
         print('Unable to authenticate to Splunk')
+
+if __name__ == '__main__':
+    main()

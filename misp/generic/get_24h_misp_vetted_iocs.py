@@ -14,7 +14,7 @@ from typing import List
 from pymisp import PyMISP
 
 # Override defaults here
-CONFIG_PATH = "misp.conf"
+CONFIG_PATH = "./misp/rh-isac.conf"
 CONFIG_SECTION = "RH-ISAC MISP"
 MISP_URL = "https://misp.rhisac.org"
 OUTPUT_FIELDS = ('value', 'type', 'timestamp', 'Tag', 'Event')
