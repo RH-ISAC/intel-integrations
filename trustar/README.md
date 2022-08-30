@@ -63,7 +63,7 @@ curl -H "Authorization: Bearer <ACCESS_TOKEN>" "https://api.trustar.co/api/1.3/i
 ## Legacy Script Config Instructions:
 Initial versions of the integration scripts used seperate config files to store credentials for each service (*trustar.conf/trustar2.conf*) these instructions pertain to setting those up
 A valid **trustar2.conf** file is the easiest way to setup access and authentication to the TruSTAR API. (If you are using the 1.3 version of the API use the Trustar_example.conf example in the /v1.3/ Directory )
-1. Make a copy of **trustar2_example.conf** and name the copy **trustar2.conf**
+1. Make a copy of **trustar2.conf.example** and name the copy **trustar2.conf**
 2. Lookup your TruSTAR API Key and API Secret in TruSTAR station
    1. https://station.trustar.co/settings/api
 3. In your **trustar2.conf** file:
