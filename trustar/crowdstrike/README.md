@@ -13,7 +13,7 @@ A storage place for CrowdStrike related integrations for the RH-ISAC TruSTAR ins
 > We strongly recomend the usage of [virtual environments](https://docs.python.org/3/library/venv.html) to provide a clean space to install dependancies.
 
 ## Configuration
-These scripts use a configuration file named **rh-isac.conf**. It contains the details to authenticate to the RH-ISAC TruSTAR Instance, and the target of each of the integrations. There are example files (**rh-isac.conf.example**) inside of each integration directory that contain the details needed to authenticate to the targets of that integration. 
+These scripts use a configuration file named **rh-isac.conf**. It contains the details to authenticate to the RH-ISAC TruSTAR instance, and the target of each of the integrations. There are example files (**rh-isac.conf.example**) inside of each integration directory that contain the details needed to authenticate to the targets of that integration. 
 
 ### TruSTAR Configuration
 To obtain your TruSTAR API details, authenticate to TruSTAR and then browse to `https://station.trustar.co/settings/api`. From there you can access or rotate your API and Secret key. 
@@ -29,10 +29,10 @@ enclave_ids = 7a33144f-aef3-442b-87d4-dbf70d8afdb0
 client_metatag = RHISAC Vetted Indicator AAD Script
 ```
 
-The `auth_endpoint` and `api_endpoint` fields are both TruSTAR defaults, and shouldnt need to be changed unless you are switching which version of the API that you are targeting. The `user_api_key` and `user_api_secret` are your API creds obtained from `https://station.trustar.co/settings/api`. The `enclave_ids` field will determine what TruSTAR Enclave you retrieve data from. The default value, the RH-ISAC Vetted Indicators Enclave, is populated by RH-ISAC Analysts each day with validated indicators from our members. The field will accept multiple enclaves, so if desired you could add a comma, followed by the Enclave ID of another encalve you wish to pull data from. The last field, `client_metatag` is an arbitrary string the API uses to gater metadata. You can leave it as the default, or change it to whatever you see fit. 
+The `auth_endpoint` and `api_endpoint` fields are both TruSTAR defaults, and shouldn't need to be changed unless you are switching which version of the API that you are targeting. The `user_api_key` and `user_api_secret` are your API creds obtained from `https://station.trustar.co/settings/api`. The `enclave_ids` field will determine what TruSTAR Enclave you retrieve data from. The default value, the RH-ISAC Vetted Indicators Enclave, is populated by RH-ISAC Analysts each day with validated indicators from our members. The field will accept multiple enclaves, so if desired you could add a comma, followed by the Enclave ID of another enclave you wish to pull data from. The last field, `client_metatag` is an arbitrary string the API uses to gather metadata. You can leave it as the default, or change it to whatever you see fit. 
 
 #### TruSTAR Python Module Configuration
-TruSTAR has two Python modules (*trustar-python-sdk1* and *trustar-sdk2-proto*) they host for interacting with the TruSTAR APIs. RH-ISAC has cloned and updated them to the latest requirements so taht they can be used with our scripts. The [TruSTAR v2.0 API](https://github.com/RH-ISAC/trustar-sdk2-proto) module should be used for all new integrations. However, if you require access to the old APIs you can find the [TruSTAR 1.3 API](https://github.com/RH-ISAC/trustar-python-sdk1) module on our github as well.
+TruSTAR has two Python modules (*trustar-python-sdk1* and *trustar-sdk2-proto*) they host for interacting with the TruSTAR APIs. RH-ISAC has cloned and updated them to the latest requirements so that they can be used with our scripts. The [TruSTAR v2.0 API](https://github.com/RH-ISAC/trustar-sdk2-proto) module should be used for all new integrations. However, if you require access to the old APIs you can find the [TruSTAR 1.3 API](https://github.com/RH-ISAC/trustar-python-sdk1) module on our github as well.
 
 To install the module:
 1. Clone the repo you need (Use TruSTAR2 unless you have a specific version to use TruSTAR 1.3)
@@ -40,7 +40,7 @@ To install the module:
 3. Test your install by attempting to import a TruSTAR module from a Python shell. IE: `from trustar2 import TruStar` and if that works you are all set.
 
 ### CrowdStrike Configuration
-To connect your script to CrowdStrike you'll need to authenticate to falcon, and retireve your Falcon API Key and Secret key.
+To connect your script to CrowdStrike you'll need to authenticate to Falcon, and retrieve your Falcon API Key and Secret key.
 
 ```
 [crowdstrike]
