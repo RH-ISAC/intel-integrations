@@ -32,7 +32,14 @@ To install the module:
 - Microsoft (Sentinel & Defender for Endpoint): Retrieve the last 24 hours of RH-ISAC Vetted IOCs from TruSTAR and export them into the MS Graph APIs for consumption by Microsoft (Azure) Sentinel and Microsoft Defender.
 
 ## Generic TruSTAR Scripts
-- Coming Soon
+- create_indicators_trustar2.py - Retrieves 24h of IOCs from TruSTAR and exports them as a CSV file
+- get_24h_trustar2_iocs_csv.py - Retrieves 24h of IOCs from TruSTAR and exports them as a CSV file
+- get_24h_trustar2_iocs.ps1 - Python script to retrieve 24h of IOCs from TruSTAR and export as a JSON file
+- get_24h_trustar2_iocs.sh - Bash script to retrieve 24h of IOCs from TruSTAR and export as a JSON file
+- get_24h_trustar2_iocs_json.py - Retrieves 24h of IOCs from TruSTAR and exports them as a JSON file
+- get_enclaves_for_user_trustar2.py - Retrieve a list of TruSTAR envlaves that a user can access (Also has availiblity to filter based on access permissions)
+- get_trustar2_iocs.py - Retrieves IOCs from TruSTAR and exports them either CSV or JSON (allows filtering of returned fields and returning IOCs from a specific range of time)
+- trustar2.conf.example - Example configuration file for TruSTAR2 scripts
 
 ## Resources
 1. TruSTAR Python SDK
