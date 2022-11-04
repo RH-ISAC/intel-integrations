@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Retrieve last 24 hours of IOCs from MISP and output to a JSON file.
+"""Retrieve last 24 hours of IOCs from MISP and output to a csv file.
 """
 
-__author__ = 'Bradley Logan'
+__author__ = 'Ian Furr'
 __version__ = '0.1'
-__email__ = 'bradley.logan@rhisac.org'
+__email__ = 'ian.furr@rhisac.org'
 
-import json
+import csv
 from configparser import ConfigParser
 from datetime import datetime
 from typing import List
@@ -103,11 +103,10 @@ def filter_results(iocs: List[dict]) -> List[dict]:
         out.append(keep)
     return out
 
-
-def ioc_dicts_to_json(iocs: List[dict],
+def ioc_dicts_to_csv(iocs: List[dict], 
                       filename: str = None,
                       ) -> None:
-    """Take a list of ioc dictionaries and write to a JSON file.
+    """Take a list of ioc dictionaries and write to a CSV file.
 
     Parameters
     ----------
@@ -118,10 +117,27 @@ def ioc_dicts_to_json(iocs: List[dict],
     """
     if not filename:
         now = datetime.now().strftime('%Y%m%dT%H%M%S')
-        filename = f'rhisac_iocs_last24h_{now}.json'
-    with open(filename, 'w') as f:
-        f.write(json.dumps(iocs))
-    print(f'Wrote {len(iocs)} IOCs to JSON file: {filename}')
+        filename = f'rhisac_iocs_last24h_{now}.csv'
+        
+    with open(filename, 'w', newline='') as f:
+        header = list(iocs[0].keys())
+
+        # move tags column (if any) to end
+        if 'tags' in header:
+            header.remove('tags')
+            header.append('tags')
+
+        indwriter = csv.writer(f)
+        indwriter.writerow(header)
+        for ioc in iocs:
+            try:
+                row = [ioc[rh] for rh in header if rh != 'tags']
+                if ioc.get('tags'): # Check to see if tags exist for obl
+                    row.append(str(ioc.get('tags')).replace("\"","'"))
+                indwriter.writerow(row)
+            except Exception as exc:
+                print(f"Error writing indicator {ioc} to CSV: {str(exc)}")
+    print(f'Wrote {len(iocs)} IOCs to CSV file: {filename}')
 
 
 if __name__ == '__main__':
@@ -133,4 +149,4 @@ if __name__ == '__main__':
         print('No IOCs found in last 24h. Nothing to output.')
     else:
         filtered = filter_results(iocs)
-        ioc_dicts_to_json(filtered, OUTPUT_FILENAME)
+        ioc_dicts_to_csv(filtered, OUTPUT_FILENAME)
