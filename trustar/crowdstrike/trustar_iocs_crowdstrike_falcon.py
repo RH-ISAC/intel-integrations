@@ -16,7 +16,7 @@ from trustar2 import TruStar, Observables  # pip install trustar2
 
 
 __author__ = 'Bradley Logan, Ian Furr'
-__version__ = '0.4'
+__version__ = '0.5'
 __email__ = 'bradley.logan@rhisac.org, ian.furr@rhisac.org'
 
 
@@ -143,7 +143,7 @@ def upload_iocs(iocs: List[dict], credentials: dict) -> None:
         elif int(response.get('status_code')) == 429:
             print("Error 429: Too many requests. Please wait and retry submissions.")
         
-        elif int(response.get('status_code')) == 200:
+        elif int(response.get('status_code')) in (200, 2001):
             print(f"Block {i} submitted successfully.")
         
         else:
