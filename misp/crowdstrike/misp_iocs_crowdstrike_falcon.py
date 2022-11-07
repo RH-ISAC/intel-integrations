@@ -15,7 +15,7 @@ from falconpy import IOC  # pip install crowdstrike-falconpy
 
 
 __author__ = 'Bradley Logan, Ian Furr'
-__version__ = '0.3'
+__version__ = '0.4'
 __email__ = 'bradley.logan@rhisac.org, ian.furr@rhisac.org'
 
 
@@ -205,7 +205,7 @@ def upload_iocs(iocs: List[dict], creds: dict) -> None:
         elif int(response.get('status_code')) == 429:
             print("Error 429: Too many requests. Please wait and retry submissions.")
         
-        elif int(response.get('status_code')) == 200:
+        elif int(response.get('status_code')) in (200, 201):
             print(f"Block {i} submitted successfully.")
         
         else:
