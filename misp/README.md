@@ -34,7 +34,9 @@ A valid **rh-isac.conf** file is the easiest way to setup access and authenticat
 - Microsoft (Sentinel & Defender for Endpoint): Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and export them into the MS Graph APIs for consumption by Microsoft (Azure) Sentinel and Microsoft Defender.
 
 ## Generic MISP Scripts
-- get_24h_misp_vetted_iocs.py: Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and output them to a JSON file.
+- get_24h_misp_vetted_iocs_csv.py: Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and output them to a CSV file.
+- get_24h_misp_vetted_iocs_json.py: Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and output them to a JSON file.
+- get_24h_misp_vetted_iocs_powershell.ps1: Powershell version of the vetted_iocs_json script.
 
 ## cURL Example (non-Python)
 ### Retrieve IOCs from MISP
