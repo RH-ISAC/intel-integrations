@@ -44,3 +44,7 @@ Other attributes can be found here: https://www.misp-project.org/openapi/#tag/At
 ```bash
 curl -H "Authorization: <AUTH_KEY>" -H "Content-Type: application/json" -H "Accept: application/json" -d '{"limit":"10", "from":"2022-11-04", "tags":"rhisac: vetted"}' -X POST https://misp.rhisac.org/attributes/restSearch
 ```
+
+## Resources for RH-ISAC Members
+- General MISP Overview Slides: https://community.rhisac.org/discussion/misp-overview-slides
+- RH-ISAC MISP Documentation: https://rhis.ac/misp
