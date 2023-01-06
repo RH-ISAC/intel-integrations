@@ -10,6 +10,7 @@
 import configparser
 
 from typing import List
+from datetime import timedelta, datetime
 from pymisp import PyMISP 
 from falconpy import IOC  # pip install crowdstrike-falconpy
 
@@ -116,6 +117,8 @@ def upload_iocs(iocs: List[dict], creds: dict) -> None:
     """
     debug = False
 
+    expire = datetime.today() + timedelta(days=180)
+    expiration_timestamp = expire.strftime("%Y-%m-%dT00:00:00.000Z")
    
     falcon = IOC(client_id=creds.get('falcon_client_id'), client_secret=creds.get('falcon_client_secret'))
 
@@ -130,7 +133,7 @@ def upload_iocs(iocs: List[dict], creds: dict) -> None:
         ioc_dict = {
             'source': "RH-ISAC Vetted",
             'action': "detect",
-            'expiration': "2023-01-01T00:00:00.000Z",
+            'expiration': expiration_timestamp,
             'description': "|".join(ioc['tags']),
             'type': TYPE_MAP[ioc['type']],
             'value': ioc['value'],
