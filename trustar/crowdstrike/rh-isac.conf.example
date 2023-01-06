@@ -4,9 +4,10 @@ auth_endpoint = https://api.trustar.co/oauth/token
 api_endpoint = https://api.trustar.co/api/2.0
 user_api_key = <TruSTAR API Key HERE>
 user_api_secret = <TruSTAR Secret Key HERE>
+
 # RH-ISAC Vetted IOCs Enclave
-enclave_ids = 7a33144f-aef3-442b-87d4-dbf70d8afdb0
-client_metatag = RHISAC Vetted Indicator AAD Script
+enclave_ids = 59cd8570-5dce-4e5b-b09c-9807530a7086
+client_metatag = RHISAC Vetted Indicator CS Script Script
 
 # CrowdStrike - Check ./misp/crowdstrike/README.md
 [crowdstrike]

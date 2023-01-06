@@ -33,7 +33,7 @@ TYPE_MAP = {
 }
 # Override defaults here
 CONFIG_PATH = "./trustar/crowdstrike/rh-isac.conf"
-TRUSTAR_CONFIG_SECTION = "TRUSTAR"
+TRUSTAR_CONFIG_SECTION = "trustar"
 
 # Regex to identify URLs that only contain a domain (not an IP, and no path)
 REXP = r'\w{2,}:\/\/(?=.*[A-Za-z])[A-Za-z0-9-\.]+\/?$'
@@ -146,7 +146,7 @@ def upload_iocs(iocs: List[dict], credentials: dict) -> None:
         elif int(response.get('status_code')) == 429:
             print("Error 429: Too many requests. Please wait and retry submissions.")
         
-        elif int(response.get('status_code')) in (200, 2001):
+        elif int(response.get('status_code')) in (200, 201):
             print(f"Block {i} submitted successfully.")
         
         else:
@@ -206,14 +206,6 @@ def retrieve_last24h_obls(ts_credentials: dict) -> List[dict]:
     print(f'Retrieved {len(obls)} IOCs')
     return obls
 
-
-if __name__ == '__main__':
-    # Call main function
-    obls = retrieve_last24h_obls()
-    if not obls:
-        print(f'No IOCs found for the given time period. Exiting...')
-        exit()
-    upload_iocs(obls)
 
 if __name__ == '__main__':
     # Parse config 
