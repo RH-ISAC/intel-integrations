@@ -139,7 +139,7 @@ def upload_iocs(iocs: List[dict], creds: dict) -> None:
             'value': ioc['value'],
             'severity': "HIGH",
             'applied_globally': True,
-            #'platforms': ['windows'], # Uncomment this line if you are required to specify a platform type
+            'platforms': ['windows'], # Add additional platform types if you are targeting multiple OSs
         }
         ioc_block.append(ioc_dict)
         ioc_count += 1
