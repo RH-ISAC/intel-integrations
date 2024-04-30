@@ -1,3 +1,9 @@
+# Sunsetting of this Integration
+This integration has been depricated in favor of the MISP42 Splunk App. More details about that integration can be found here: 
+https://splunkbase.splunk.com/app/4335
+https://github.com/remg427/misp42splunk
+
+
 # ./INTEL-INTEGRATIONS/MISP/SPLUNK 
 A storage place for Splunk related integrations for the RH-ISAC MISP instance.
 

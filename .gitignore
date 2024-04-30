@@ -133,6 +133,7 @@ dmypy.json
 
 # Tool Conf
 *.conf
+config.py
 
 # Explicit Exclude for all example config files
 ! *.example
