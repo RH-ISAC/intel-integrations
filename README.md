@@ -1,15 +1,50 @@
-# ./INTEL-INTEGRATIONS
-A repository of example scripts for integrating RH-ISAC threat intel with various security tools.<br>
+# ./INTEL-INTEGRATIONS/
+A repository of example scripts for integrating RH-ISAC threat intel with various security tools.
 
 > **Warning**
-> Use the content in this repository at your own risk. RH-ISAC will not be held responsible for data loss, nor any other problems resulting from the use of this content. **These scripts are beta versions and intended to be used as examples.**
+> Use the content in this repository at your own risk. RH-ISAC will not be held responsible for data loss, nor any other problems resulting from the use of this content. **These scripts are beta versions and intended to be used as an examples.**
 
-## Structure
-Root folders for `trustar` and `misp` contain documentation and integration scripts for a variety of security products. 
+## Requirements
+- Python 3.9+
+- PyMISP `pip install pymisp` (https://github.com/MISP/PyMISP)
+- Application specific modules (depending on the script)
+
+> **Note**
+> We strongly recomend the usage of [virtual environments](https://docs.python.org/3/library/venv.html) to provide a clean space to install dependancies.
 
 ## Configuration
-The scripts inside of this repo use a config file **rh-isac.conf**. Several example configuration files can be found throughout the repo as **rh-isac.config.example** and the fields are detailed in the relevant *README.md*.
+A valid **rh-isac.conf** or **config.py** file is the easiest way to setup access and authentication to the MISP API. Review each scripts README.md to identify proper setup instructions.
+1. Make a copy of **rh-isac.conf.example** and name it **rh-isac.conf**
+2. Generate an auth key in MISP
+   1. Visit https://misp.rhisac.org/users/view/me
+   2. Select `Auth Keys`
+   3. Then `Add authentication key`
+   4. Add a comment to the comment field to easily identify the key in the future. If you dont plan to write any data back to the RH-ISAC MISP instance, we also recomend using the read only flag to limit unnecessary permissions on the key.
+   5. Finally choose `Submit`
+   6. Copy the key presented on the next screen into your **rh-isac.conf** where it says `<MISP API KEY HERE>`
+3. Save the file in the same directory as the MISP Python scripts you would like to run.
 
-## Support
-If you experience issues with any of the scripts in this repository please contact Ian Furr (@Ian Furr (RH-ISAC) on the RH-ISAC Slack or ian.furr@rhisac.org)
+## PyMISP - Python Library to access MISP
+1. Documentation: https://pymisp.readthedocs.io
+2. Source: https://github.com/MISP/PyMISP
 
+## MISP Integrations
+- CrowdStrike Falcon: Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and export them into the Falcon API.
+- Splunk (and Splunk ES): Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and export them into Splunk APIs.
+- Microsoft (Sentinel & Defender for Endpoint): Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and export them into the MS Graph APIs for consumption by Microsoft (Azure) Sentinel and Microsoft Defender.
+
+## Generic MISP Scripts
+- get_24h_misp_vetted_iocs_csv.py: Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and output them to a CSV file.
+- get_24h_misp_vetted_iocs_json.py: Retrieve the last 24 hours of RH-ISAC Vetted IOCs from MISP and output them to a JSON file.
+- get_24h_misp_vetted_iocs_powershell.ps1: Powershell version of the vetted_iocs_json script.
+
+## cURL Example (non-Python)
+### Retrieve IOCs from MISP
+Other attributes can be found here: https://www.misp-project.org/openapi/#tag/Attributes/operation/restSearchAttributes
+```bash
+curl -H "Authorization: <AUTH_KEY>" -H "Content-Type: application/json" -H "Accept: application/json" -d '{"limit":"10", "latest":"1d", "tags":"rhisac: vetted"}' -X POST https://misp.rhisac.org/attributes/restSearch
+```
+
+## Resources for RH-ISAC Members
+- General MISP Overview Slides: https://community.rhisac.org/discussion/misp-overview-slides
+- RH-ISAC MISP Documentation: https://rhis.ac/misp
