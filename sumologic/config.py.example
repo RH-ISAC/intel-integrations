@@ -1,0 +1,10 @@
+# 
+misp_config = {"key": "<MISP API KEY HERE>"}
+
+sumologic_config = {
+    "threatIntelSourceId": 30,
+    "indicator_expiration": 30,
+    "sumo_endpoint": "https://api.us2.sumologic.com/api",  # https://help.sumologic.com/docs/api/getting-started/#which-endpoint-should-i-should-use
+    "accessId": "<SUMOLOGIC ACCESSID HERE>",
+    "accessKey": "<SUMOLOGIC ACCESSKEY HERE>",
+}
