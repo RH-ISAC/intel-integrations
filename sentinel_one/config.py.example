@@ -1,0 +1,7 @@
+misp_config = {"misp_key": "<MISP API KEY HERE>"}
+
+
+sentinel_config = {
+    "sentinelone_url": "<ENDPOINT_URL_HERE>",
+    "api_key": "<API_KEY_HERE>",
+}
