@@ -1,4 +1,4 @@
-# ./INTEL-INTEGRATIONS/SUMOLOGIC 
+# ./INTEL-INTEGRATIONS/Sentinel_One 
 A storage place for SentinelOne related integrations for the RH-ISAC MISP instance.
 
 > **Warning**
