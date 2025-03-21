@@ -16,7 +16,7 @@ from falconpy import IOC  # pip install crowdstrike-falconpy
 
 
 __author__ = "Bradley Logan, Ian Furr"
-__version__ = "0.5"
+__version__ = "0.6"
 __email__ = "bradley.logan@rhisac.org, ian.furr@rhisac.org"
 
 
@@ -26,6 +26,8 @@ ENCLAVE_IDS = [
 ]
 TYPE_MAP = {
     "domain": "domain",
+    "hostname": "domain",
+    "ip-src": "ipv4",
     "ip-dst": "ipv4",
     "IP6": "ipv6",
     "md5": "md5",
