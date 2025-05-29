@@ -33,7 +33,7 @@ A valid **rh-isac.conf** or **config.py** file is the easiest way to setup acces
 ### Retrieve IOCs from MISP
 Other attributes can be found here: https://www.misp-project.org/openapi/#tag/Attributes/operation/restSearchAttributes
 ```bash
-curl -H "Authorization: <AUTH_KEY>" -H "Content-Type: application/json" -H "Accept: application/json" -d '{"limit":"10", "latest":"1d", "tags":"rhisac: vetted"}' -X POST https://misp.rhisac.org/attributes/restSearch
+curl -H "Authorization: <AUTH_KEY>" -H "Content-Type: application/json" -H "Accept: application/json" -d '{"limit":"10", "last":"1d", "tags":"rhisac: vetted"}' -X POST https://misp.rhisac.org/attributes/restSearch
 ```
 
 ## Resources for RH-ISAC Members
