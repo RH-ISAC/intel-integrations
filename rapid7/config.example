@@ -1,0 +1,9 @@
+[RH-ISAC MISP]
+key = INSERT_YOUR_MISP_API_KEY_HERE
+[InsightIDR]
+# API key to actually authenticate to the API endpoint
+api_key = INSERT_YOUR_INSIGHTIDR_API_ACCESS_KEY
+# Your API Endpoint location, this may be us2, or others (check the url you use in the browser)
+api_endpoint = us
+# This is generated out of the page that shows the community threat - it expires after like 60d.
+threat_key = INSERT_YOUR_SPECIFIC_INSIGHTIDR_COMMUNITY_THREAT_API_KEY
